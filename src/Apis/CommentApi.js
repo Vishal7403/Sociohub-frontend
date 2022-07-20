@@ -1,5 +1,5 @@
 import { getImages } from "./PostApi";
-const host = "http://localhost:7878";
+const host="https://deploy-sociohub.herokuapp.com"
 //used to fetch comments of a post
 const getPostComments = async (id) => {
   const response = await fetch(`${host}/api/comment/getPostComment/${id}`, {
@@ -49,9 +49,5 @@ const deleteComment = async (commentId) => {
       },
     }
   );
-  /*const newComments = Comments.filter((comment) => {
-    return comment._id !== commentId;
-  });
-  setComments(newComments);*/
 };
 export { getPostComments, createComment, deleteComment };

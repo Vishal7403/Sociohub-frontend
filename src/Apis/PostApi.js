@@ -1,7 +1,6 @@
 import { Buffer } from "buffer";
+const host = "https://deploy-sociohub.herokuapp.com";
 var base64Flag = "data:image/jpeg;base64,";
-
-const host = "http://localhost:7878";
 const findCount = async () => {
   const response = await fetch(`${host}/api/post/getCount`, {
     method: "GET",

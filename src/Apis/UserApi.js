@@ -1,5 +1,5 @@
 import { getImages } from "./PostApi";
-const host = "http://localhost:7878";
+const host="https://deploy-sociohub.herokuapp.com"
 const LoginUser = async (emailId, password) => {
   const response = await fetch(`${host}/api/auth/login`, {
     method: "POST",

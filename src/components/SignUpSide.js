@@ -14,10 +14,11 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState} from "react";
 import { SignUpUser } from "../Apis/UserApi";
 import { toast } from "react-toastify";
-
+import {useHistory} from "react-router-dom"
 const theme = createTheme();
 
 export default function SignUp() {
+  const history=useHistory()
   const Toast = (msg, type) =>
     toast(msg, { type: type, pauseOnFocusLoss: false, pauseOnHover: false });
   const [Data, setData] = useState({
@@ -40,6 +41,7 @@ export default function SignUp() {
       );
       if (response.success) {
         Toast(response.msg, "success");
+        history.push("/login")
       } else {
         Toast("email already exists", "error");
       }

@@ -1,0 +1,6 @@
+.no-scrollbars::-webkit-scrollbar { 
+    display: none;  
+}
+.MuiCardContent-root-158:last-child {
+    padding-bottom: 0px;
+}

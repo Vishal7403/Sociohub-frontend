@@ -15,7 +15,7 @@ function Posts() {
   useEffect(() => {
     if(!localStorage.getItem("token"))
     {
-      history.push("/")
+      history.push("/login")
     }
     const getData = async () => {
       

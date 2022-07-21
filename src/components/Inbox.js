@@ -13,7 +13,7 @@ import Render from "./Render";
 import Messenger from "./Messenger";
 
 export default function Inbox() {
-  const host = "http://localhost:7878";
+  const host = "https://deploy-sociohub.herokuapp.com";
   const [Conversations, setConversations] = useState([]);
   const [Chat, setChat] = useState(null);
   const [Userid, setUserid] = useState(null);

@@ -72,7 +72,7 @@ export default function ForgetPassword() {
   }
   const [Success, setSuccess] = useState(false);
   let history = useHistory();
-  const host = "http://localhost:7878";
+  const host = "https://deploy-sociohub.herokuapp.com";
   const handleSubmitBefore = async (e) => {
     e.preventDefault();
     const response = await fetch(

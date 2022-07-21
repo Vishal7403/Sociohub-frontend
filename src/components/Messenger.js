@@ -17,7 +17,7 @@ function Messenger(props) {
   const [currentChat, setcurrentChat] = useState(null);
   const Socket = useRef();
   const scrollRef = useRef();
-  const host = "http://localhost:7878";
+  const host = "https://deploy-sociohub.herokuapp.com";
   const handleClick = async (NewMessage) => {
     Socket.current.emit("sendMessage", {
       senderId: localStorage.getItem("UserId"),
@@ -79,7 +79,7 @@ function Messenger(props) {
   };
   useEffect(() => {
     getCurrentChat(Chat);
-    Socket.current = io("http://localhost:7878");
+    Socket.current = io("https://deploy-sociohub.herokuapp.com");
     Socket.current.on("getMessage", (data) => {
       setArrivalMessage({
         sender: data.senderId,

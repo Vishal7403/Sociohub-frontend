@@ -180,13 +180,11 @@ export default function Profile() {
   const [UserPosts, setUserPosts] = useState(null);
   const [Bar, setBar] = useState(0);
   const history=useHistory()
-  useEffect(()=>{
+  useEffect(() => {
     if(!localStorage.getItem("token"))
     {
       history.push("/login")
     }
-  },[])
-  useEffect(() => {
     const getData = async () => {
       Loading(10);
       let Posts = await getUserPosts(id.id);

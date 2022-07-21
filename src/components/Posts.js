@@ -16,6 +16,7 @@ function Posts() {
     if(!localStorage.getItem("token"))
     {
       history.push("/login")
+      return;
     }
     const getData = async () => {
       

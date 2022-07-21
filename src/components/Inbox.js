@@ -11,12 +11,14 @@ import ForumIcon from "@mui/icons-material/Forum";
 import { FixedSizeList } from "react-window";
 import Render from "./Render";
 import Messenger from "./Messenger";
+import { useHistory } from "react-router-dom";
 
 export default function Inbox() {
   const host = "https://deploy-sociohub.herokuapp.com";
   const [Conversations, setConversations] = useState([]);
   const [Chat, setChat] = useState(null);
   const [Userid, setUserid] = useState(null);
+  const history=useHistory()
   const fetchConvo = async () => {
     const response = await fetch(
       `${host}/api/conversation/${localStorage.getItem("UserId")}`,
@@ -33,9 +35,10 @@ export default function Inbox() {
     setConversations(ParsedResponse);
   };
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      fetchConvo();
+    if (!localStorage.getItem("token")) {
+      history.push("/login");
     }
+    fetchConvo();
   }, []);
   function renderRow(props) {
     const { index, style } = props;

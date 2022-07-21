@@ -14,7 +14,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { FixedSizeList } from "react-window";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
 import "./CommentStyles.css";
 import ShareIcon from "@mui/icons-material/Share";
 import { useEffect, useState, Fragment } from "react";
@@ -146,7 +146,12 @@ export default function CommentSection() {
   const { id } = useParams();
   const [Comments, setComments] = useState([]);
   const [Post, setPost] = useState(null);
+  const history = useHistory();
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      history.push("/login");
+      return;
+    }
     const func = async () => {
       if (localStorage.getItem("token")) {
         let p = await PostById(id);
@@ -251,9 +256,7 @@ export default function CommentSection() {
                 </FixedSizeList>
               }
               <Divider />
-              <LikeBar
-                post={Post}
-              />
+              <LikeBar post={Post} />
               <Divider />
               <MessageBar
                 handleClick={handleClick}

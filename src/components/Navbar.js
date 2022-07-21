@@ -249,6 +249,7 @@ export default function PrimarySearchAppBar() {
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       history.push("/login");
+      return;
     }
     const func = async () => {
       const res = await getUserInfo(localStorage.getItem("UserId"));

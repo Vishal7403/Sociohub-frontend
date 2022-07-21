@@ -179,6 +179,13 @@ export default function Profile() {
   const [UserData, setUserData] = useState(null);
   const [UserPosts, setUserPosts] = useState(null);
   const [Bar, setBar] = useState(0);
+  const history=useHistory()
+  useEffect(()=>{
+    if(!localStorage.getItem("token"))
+    {
+      history.push("/login")
+    }
+  },[])
   useEffect(() => {
     const getData = async () => {
       Loading(10);

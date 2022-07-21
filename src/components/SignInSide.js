@@ -60,8 +60,8 @@ export default function SignIn() {
   const handleSubmit = async (event) => {
     setLoader(true);
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    let response = await LoginUser(data.get("email"), data.get("password"));
+    let response = await LoginUser(Email, Password);
+    console.log(response.success)
     if (response.success) {
       localStorage.setItem("token", response.authToken);
       localStorage.setItem("UserId", response.UserId);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getPosts, findCount } from "../Apis/PostApi";
 import PostCard from "./PostCard";
+import { useHistory } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import CircularProgress from "@mui/material/CircularProgress";
 import { getUserInfo } from "../Apis/UserApi";
@@ -10,9 +11,14 @@ function Posts() {
   const [Count, setCount] = useState(0);
   const [Posts, setPosts] = useState([]);
   const [SavedPosts, setSavedPosts] = useState([]);
+  const history=useHistory()
   useEffect(() => {
+    if(!localStorage.getItem("token"))
+    {
+      history.push("/")
+    }
     const getData = async () => {
-      if (localStorage.getItem("token")) {
+      
         let res = await getUserInfo(localStorage.getItem("UserId"));
         if (res.SavedPosts) {
           setSavedPosts(res.SavedPosts);
@@ -21,7 +27,6 @@ function Posts() {
         setPosts(response);
         let resp = await findCount();
         setCount(resp);
-      }
     };
     if (Posts.length === 0) {
       getData();

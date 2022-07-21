@@ -245,13 +245,11 @@ function Icons() {
 
 export default function PrimarySearchAppBar() {
   let history = useHistory();
+  const [Pic, setPic] = useState(null);
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       history.push("/login");
     }
-  }, []);
-  const [Pic, setPic] = useState(null);
-  useEffect(() => {
     const func = async () => {
       const res = await getUserInfo(localStorage.getItem("UserId"));
       if (res.ProfilePic) {

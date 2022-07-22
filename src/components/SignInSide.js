@@ -13,9 +13,9 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { LoginUser, LoginUsingGoogle, getUserInfo } from "../Apis/UserApi";
+import { LoginUser, LoginUsingGoogle } from "../Apis/UserApi";
 import jwt_decode from "jwt-decode";
 const theme = createTheme();
 export default function SignIn() {
@@ -25,7 +25,7 @@ export default function SignIn() {
     if (res.success) {
       localStorage.setItem("token", res.authToken);
       localStorage.setItem("UserId", res.UserId);
-      history.push("/");
+      navigate("/");
       Toast(res.message, "success");
     } else {
       Toast(res.message, "error");
@@ -50,22 +50,22 @@ export default function SignIn() {
         }
       );
     };
+    //eslint-disable-next-line
   }, []);
   const Toast = (msg, type) =>
     toast(msg, { type: type, pauseOnFocusLoss: false, pauseOnHover: false });
   const [Loader, setLoader] = useState(false);
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
-  let history = useHistory();
+  let navigate = useNavigate();
   const handleSubmit = async (event) => {
     setLoader(true);
     event.preventDefault();
     let response = await LoginUser(Email, Password);
-    console.log(response.success)
     if (response.success) {
       localStorage.setItem("token", response.authToken);
       localStorage.setItem("UserId", response.UserId);
-      history.push("/");
+      navigate("/");
       Toast(response.message, "success");
     } else {
       Toast("please login with correct credentials", "error");

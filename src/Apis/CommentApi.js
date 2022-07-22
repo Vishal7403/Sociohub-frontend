@@ -1,17 +1,18 @@
 import { getImages } from "./PostApi";
-const host="https://deploy-sociohub.herokuapp.com"
+import axios from "axios";
+
 //used to fetch comments of a post
 const getPostComments = async (id) => {
-  const response = await fetch(`${host}/api/comment/getPostComment/${id}`, {
+  const response = await axios({
     method: "GET",
+    url: `${process.env.REACT_APP_HOST}/api/comment/getPostComment/${id}`,
     headers: {
       "content-type": "application/json",
       "auth-token": localStorage.getItem("token"),
     },
   });
-  const ParsedResponse = await response.json();
   const comments = await Promise.all(
-    ParsedResponse.map(async (comment) => {
+    response.data.map(async (comment) => {
       if (comment.user.ProfilePic) {
         const stream = await getImages(comment.user.ProfilePic);
         comment.user.pic = stream;
@@ -23,31 +24,29 @@ const getPostComments = async (id) => {
 };
 //used for creating comment
 const createComment = async (id, description) => {
-  const response = await fetch(`${host}/api/comment/createComment/${id}`, {
+  const response = await axios({
     method: "POST",
+    url: `${process.env.REACT_APP_HOST}/api/comment/createComment/${id}`,
     headers: {
       "content-type": "application/json",
       "auth-token": localStorage.getItem("token"),
     },
-    body: JSON.stringify({
+    data: {
       description: description,
-    }),
+    },
   });
-  const ParsedResponse = await response.json();
-  //setComments(Comments.concat(ParsedResponse));
-  return ParsedResponse;
+  return response.data;
 };
 //used to delete comment
 const deleteComment = async (commentId) => {
-  const response = await fetch(
-    `${host}/api/comment/deleteComment/${commentId}`,
-    {
-      method: "PUT",
-      headers: {
-        "content-type": "application/json",
-        "auth-token": localStorage.getItem("token"),
-      },
-    }
-  );
+  //eslint-disable-next-line
+  const response = await axios({
+    method: "PUT",
+    url: `${process.env.REACT_APP_HOST}/api/comment/deleteComment/${commentId}`,
+    headers: {
+      "content-type": "application/json",
+      "auth-token": localStorage.getItem("token"),
+    },
+  });
 };
 export { getPostComments, createComment, deleteComment };

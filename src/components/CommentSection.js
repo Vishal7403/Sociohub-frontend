@@ -14,22 +14,24 @@ import {
   MenuItem,
 } from "@mui/material";
 import { FixedSizeList } from "react-window";
-import { Link, useParams, useHistory } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import "./CommentStyles.css";
 import ShareIcon from "@mui/icons-material/Share";
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState, Fragment,useContext } from "react";
 import UserImg from "./user_img.png";
 import Button from "@mui/material/Button";
 import MessageBar from "./MessageBar";
 import { styled } from "@mui/styles";
 import { format } from "timeago.js";
 import Popup from "./Popup";
+import ReactPlayer from "react-player";
 import { handleLike, PostById } from "../Apis/PostApi";
 import {
   getPostComments,
   createComment,
   deleteComment,
 } from "../Apis/CommentApi";
+import InfoContext from "../Contexts/InfoContext";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 const CardContentNoPadding = styled(CardContent)(`
@@ -146,21 +148,27 @@ export default function CommentSection() {
   const { id } = useParams();
   const [Comments, setComments] = useState([]);
   const [Post, setPost] = useState(null);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const infocontext = useContext(InfoContext);
+  const { Loading } = infocontext;
   useEffect(() => {
     if (!localStorage.getItem("token")) {
-      history.push("/login");
+      navigate("/login");
       return;
     }
     const func = async () => {
-      if (localStorage.getItem("token")) {
-        let p = await PostById(id);
-        setPost(p);
-        let comments = await getPostComments(id);
-        setComments(comments);
-      }
+      Loading(10);
+      let p = await PostById(id);
+      Loading(30);
+      setPost(p);
+      Loading(50);
+      let comments = await getPostComments(id);
+      Loading(70);
+      setComments(comments);
+      Loading(100);
     };
     func();
+    //eslint-disable-next-line
   }, []);
   const handleClick = (comment) => {
     createComment(Post._id, comment);
@@ -215,12 +223,23 @@ export default function CommentSection() {
       >
         <Card style={{ display: "flex" }}>
           <div style={{ marginTop: "auto", marginBottom: "auto" }}>
-            <CardMedia
-              component="img"
-              style={{ maxHeight: "400px", maxWidth: "500px" }}
-              image={Post.img}
-              sx={{ backgroundColor: "white" }}
-            />
+            <div style={{ background: "black" }}>
+              {Post.File.metadata === "video/mp4" ? (
+                <ReactPlayer
+                  url={`${process.env.REACT_APP_HOST}/api/post/getVideos/${Post.File.Id}`}
+                  playing={true}
+                  loop={true}
+                  controls
+                  style={{ maxWidth: "530px", maxHeight: "470px" }}
+                />
+              ) : (
+                <CardMedia
+                  component="img"
+                  style={{ maxHeight: "470px", maxWidth: "530px" }}
+                  image={Post.img}
+                />
+              )}
+            </div>
           </div>
           <Box
             sx={{

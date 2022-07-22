@@ -11,7 +11,7 @@ import AddCommentIcon from "@mui/icons-material/AddComment";
 import UserImg from "./user_img.png";
 import MessageBar from "./MessageBar";
 import ShareIcon from "@mui/icons-material/Share";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
 import { createComment } from "../Apis/CommentApi";
 import { format } from "timeago.js";
@@ -22,9 +22,9 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import {SavePost} from "../Apis/UserApi"
+import { SavePost } from "../Apis/UserApi";
 function LikeBar(props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { post, CommentCount, SavedPosts } = props;
   const [Likes, setLikes] = useState(post.likes.length);
   const [open, setOpen] = useState(false);
@@ -44,10 +44,10 @@ function LikeBar(props) {
     setLiked(!Liked);
     handleLike(post._id);
   };
-  const changeBookmark=()=>{
-    setBookmark(!Bookmark)
-    SavePost(post._id)
-  }
+  const changeBookmark = () => {
+    setBookmark(!Bookmark);
+    SavePost(post._id);
+  };
   return (
     <>
       {open && (
@@ -74,7 +74,7 @@ function LikeBar(props) {
           aria-label="add comment"
           style={{ border: "0", background: "white" }}
           onClick={() => {
-            history.push(`/comment/${post._id}`);
+            navigate(`/comment/${post._id}`);
           }}
         >
           <AddCommentIcon />
@@ -158,7 +158,7 @@ function PostItem(props) {
           {props.post.File.metadata === "video/mp4" ? (
             <ReactPlayer
               style={{ maxWidth: "fit-content" }}
-              url={`http://localhost:7878/api/post/getVideos/${props.post.File.Id}`}
+              url={`${process.env.REACT_APP_HOST}/api/post/getVideos/${props.post.File.Id}`}
               playing={true}
               loop={true}
               controls

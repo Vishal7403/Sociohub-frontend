@@ -102,9 +102,6 @@ function ContentArea(props) {
     };
     try {
       const compressedFile = await imageCompression(imageFile, options);
-      console.log(
-        `compressedFile size ${compressedFile.size / 1024 / 1024} MB`
-      );
       return compressedFile;
     } catch (error) {
       console.log(error);
@@ -174,14 +171,15 @@ function Func(props) {
               <video
                 controls
                 autoPlay
-                style={{ maxHeight: "500px", maxWidth: "500px" }}
+                style={{ maxHeight: "330px", maxWidth: "550px" }}
               >
                 <source src={URL.createObjectURL(file)}></source>
               </video>
             ) : (
               <img
                 src={URL.createObjectURL(file)}
-                style={{ maxHeight: "500px", maxWidth: "500px" }}
+                style={{ maxHeight: "330px", maxWidth: "550px" }}
+                alt=""
               />
             )}
           </div>

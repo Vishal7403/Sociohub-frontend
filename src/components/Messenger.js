@@ -9,77 +9,47 @@ import { format } from "timeago.js";
 import UserImg from "./user_img.png";
 import { io } from "socket.io-client";
 import MessageBar from "./MessageBar";
+import { sendMessage, fetchMessages, getCurrentChat } from "../Apis/ChatApi";
+import { getUserInfo } from "../Apis/UserApi";
 function Messenger(props) {
-  const { Chat, Userid } = props;
+  const { Chat } = props;
   const [Messages, setMessages] = useState([]);
   const [ArrivalMessage, setArrivalMessage] = useState(null);
   const [User, setUser] = useState(null);
   const [currentChat, setcurrentChat] = useState(null);
   const Socket = useRef();
   const scrollRef = useRef();
-  const host = "https://deploy-sociohub.herokuapp.com";
   const handleClick = async (NewMessage) => {
     Socket.current.emit("sendMessage", {
       senderId: localStorage.getItem("UserId"),
-      receiverId: Userid,
+      receiverId: User._id,
       message: NewMessage,
     });
-    let msg={conversationId: Chat,
+    let msg = {
+      conversationId: Chat,
       sender: localStorage.getItem("UserId"),
-      message: NewMessage}
-    const response = await fetch(`${host}/api/chat/`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "auth-token": localStorage.getItem("token"),
-      },
-      body: JSON.stringify(msg),
-    });
+      message: NewMessage,
+    };
+    sendMessage(msg);
     const newMessages = Messages.concat(msg);
     setMessages(newMessages);
   };
 
-  const fetchMessages = async (id) => {
-    const response = await fetch(`${host}/api/chat/${id}`, {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-        "auth-token": localStorage.getItem("token"),
-      },
-    });
-    const ParsedResponse = await response.json();
-    console.log(ParsedResponse)
-    setMessages(ParsedResponse);
-  };
-  const fetchUser = async (id) => {
-    const response = await fetch(`${host}/api/auth/getUser/${id}`, {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-        "auth-token": localStorage.getItem("token"),
-      },
-    });
-    const ParsedResponse = await response.json();
-    setUser(ParsedResponse);
-  };
-  const getCurrentChat = async (id) => {
-    const response = await fetch(
-      `${host}/api/conversation/getConversation/${id}`,
-      {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          "auth-token": localStorage.getItem("token"),
-        },
-      }
-    );
-    const ParsedResponse = await response.json();
-    //console.log(ParsedResponse);
-    setcurrentChat(ParsedResponse);
-  };
   useEffect(() => {
-    getCurrentChat(Chat);
-    Socket.current = io("https://deploy-sociohub.herokuapp.com");
+    const func = async () => {
+      const chat = await getCurrentChat(Chat);
+      setcurrentChat(chat);
+      chat.members = chat.members.filter(
+        (m) => m !== localStorage.getItem("UserId")
+      );
+      const user = await getUserInfo(chat.members[0]);
+      setUser(user);
+      const messages = await fetchMessages(Chat);
+      setMessages(messages);
+    };
+    func();
+    Socket.current = io(`${process.env.REACT_APP_HOST}`);
+    Socket.current.emit("addUser", localStorage.getItem("UserId"));
     Socket.current.on("getMessage", (data) => {
       setArrivalMessage({
         sender: data.senderId,
@@ -95,15 +65,9 @@ function Messenger(props) {
       setMessages((prev) => [...prev, ArrivalMessage]);
   }, [ArrivalMessage, currentChat]);
   useEffect(() => {
-    Socket.current.emit("addUser", localStorage.getItem("UserId"));
-    Socket.current.on("getUsers", (users) => console.log(users));
-    fetchMessages(Chat);
-    fetchUser(Userid);
-  }, []);
-  useEffect(() => {
-    setTimeout(()=>{
+    setTimeout(() => {
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-    },300)
+    }, 300);
   }, [Messages]);
   function renderRow(props) {
     const { index, style } = props;
@@ -156,11 +120,7 @@ function Messenger(props) {
           style={{ display: "flex", alignItems: "center", marginBlock: "12px" }}
         >
           <Avatar
-            src={
-              !User.ProfilePic
-                ? UserImg
-                : User.pic
-            }
+            src={!User.ProfilePic ? UserImg : User.pic}
             sx={{ margin: "0px 20px" }}
           />
           <div>{User.name}</div>
@@ -188,7 +148,11 @@ function Messenger(props) {
           alignItems: "center",
         }}
       >
-        <MessageBar handleClick={handleClick} prompt={'Send'}  style={{width: "400px", height: "30px", marginRight: "15px"}}/>
+        <MessageBar
+          handleClick={handleClick}
+          prompt={"Send"}
+          style={{ width: "400px", height: "30px", marginRight: "15px" }}
+        />
       </div>
     </div>
   );

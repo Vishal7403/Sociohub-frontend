@@ -12,7 +12,7 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const theme = createTheme();
@@ -71,8 +71,8 @@ export default function ForgetPassword() {
     );
   }
   const [Success, setSuccess] = useState(false);
-  let history = useHistory();
-  const host = "https://deploy-sociohub.herokuapp.com";
+  let navigate = useNavigate();
+  const host = process.env.REACT_APP_HOST;
   const handleSubmitBefore = async (e) => {
     e.preventDefault();
     const response = await fetch(
@@ -106,7 +106,7 @@ export default function ForgetPassword() {
     if (ParsedResponse.success === true) {
       Toast(ParsedResponse.message, ParsedResponse.success);
       setTimeout(() => {
-        history.push("/login");
+        navigate("/login");
       }, 3000);
     }
   };

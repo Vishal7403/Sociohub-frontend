@@ -8,9 +8,11 @@ import {
 } from "@mui/material";
 import UserImg from "./user_img.png";
 import { getUserInfo } from "../Apis/UserApi";
+import {useNavigate} from "react-router-dom"
 function Render(props) {
-  const { style, id, setChat, convoId, setUserid } = props;
+  const { style, id,convoId} = props;
   const [User, setUser] = useState("");
+  let navigate=useNavigate()
   useEffect(() => {
     const func = async () => {
       let res = await getUserInfo(id);
@@ -25,15 +27,12 @@ function Render(props) {
       component="div"
       disablePadding
       onClick={() => {
-        setChat(convoId);
-        setUserid(id);
+        navigate(`/inbox/${convoId}`)
       }}
     >
       <ListItemButton>
         <ListItemAvatar>
-          <Avatar
-            src={!User.ProfilePic ? UserImg : User.ProfilePic}
-          />
+          <Avatar src={!User.ProfilePic ? UserImg : User.ProfilePic} />
         </ListItemAvatar>
         <ListItemText primary={User.name} sx={{ border: "0px" }} />
       </ListItemButton>

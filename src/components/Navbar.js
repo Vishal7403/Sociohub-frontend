@@ -29,7 +29,7 @@ import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import HomeIcon from "@mui/icons-material/Home";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import { useHistory, Link, useLocation } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { useRef } from "react";
 import { SearchUser, getUserInfo } from "../Apis/UserApi";
@@ -80,7 +80,7 @@ function SearchList(props) {
   const { anchor, Query, changeQuery } = props;
   const [Users, setUsers] = useState([]);
   const [Loader, setLoader] = useState(false);
-  let history = useHistory();
+  let navigate = useNavigate();
   useEffect(() => {
     const getUsers = async () => {
       setLoader(true);
@@ -120,7 +120,7 @@ function SearchList(props) {
                 }}
                 onClick={() => {
                   changeQuery();
-                  history.push(`/profile/${localStorage.getItem("UserId")}`);
+                  navigate(`/profile/${user._id}`);
                 }}
               >
                 <ListItem alignItems="center">
@@ -181,7 +181,7 @@ function SearchBar(props) {
 }
 function Icons() {
   let location = useLocation();
-  let history = useHistory();
+  let navigate = useNavigate();
   const [addPost, setaddPost] = useState(false);
   const handleClick = () => {
     setaddPost(false);
@@ -192,7 +192,7 @@ function Icons() {
         size="large"
         color="inherit"
         onClick={() => {
-          history.push("/");
+          navigate("/");
         }}
       >
         <Badge>
@@ -207,7 +207,7 @@ function Icons() {
         size="large"
         color="inherit"
         onClick={() => {
-          history.push("/inbox");
+          navigate("/inbox");
         }}
       >
         <Badge>
@@ -244,11 +244,11 @@ function Icons() {
 }
 
 export default function PrimarySearchAppBar() {
-  let history = useHistory();
+  let navigate = useNavigate();
   const [Pic, setPic] = useState(null);
   useEffect(() => {
     if (!localStorage.getItem("token")) {
-      history.push("/login");
+      navigate("/login");
       return;
     }
     const func = async () => {
@@ -258,6 +258,7 @@ export default function PrimarySearchAppBar() {
       }
     };
     func();
+    //eslint-disable-next-line
   }, []);
   const context = useContext(InfoContext);
   const { Progress, Loading } = context;
@@ -296,7 +297,7 @@ export default function PrimarySearchAppBar() {
       <MenuItem
         onClick={() => {
           handleMenuClose();
-          history.push(`/profile/${localStorage.getItem("UserId")}`);
+          navigate(`/profile/${localStorage.getItem("UserId")}`);
         }}
       >
         Profile
@@ -305,7 +306,7 @@ export default function PrimarySearchAppBar() {
         onClick={() => {
           localStorage.removeItem("token");
           localStorage.removeItem("UserId");
-          history.push("/login");
+          navigate("/login");
         }}
       >
         Log out

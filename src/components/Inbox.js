@@ -11,35 +11,29 @@ import ForumIcon from "@mui/icons-material/Forum";
 import { FixedSizeList } from "react-window";
 import Render from "./Render";
 import Messenger from "./Messenger";
-import { useHistory } from "react-router-dom";
-
+import { useNavigate,useParams } from "react-router-dom";
+import { fetchConvo } from "../Apis/ChatApi";
 export default function Inbox() {
-  const host = "https://deploy-sociohub.herokuapp.com";
+  const param=useParams()
   const [Conversations, setConversations] = useState([]);
   const [Chat, setChat] = useState(null);
-  const [Userid, setUserid] = useState(null);
-  const history=useHistory()
-  const fetchConvo = async () => {
-    const response = await fetch(
-      `${host}/api/conversation/${localStorage.getItem("UserId")}`,
-      {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-          "auth-token": localStorage.getItem("token"),
-        },
-      }
-    );
-    const ParsedResponse = await response.json();
-    console.log(ParsedResponse);
-    setConversations(ParsedResponse);
+  const navigate = useNavigate();
+  const func = async () => {
+    const convo = await fetchConvo();
+    setConversations(convo);
   };
   useEffect(() => {
     if (!localStorage.getItem("token")) {
-      history.push("/login");
+      navigate("/login");
+      return;
     }
-    fetchConvo();
-  }, []);
+    if(param.id)
+    {
+      setChat(param.id)
+    }
+    func();
+    //eslint-disable-next-line
+  }, [param]);
   function renderRow(props) {
     const { index, style } = props;
     //eslint-disable-next-line
@@ -51,8 +45,6 @@ export default function Inbox() {
             id={m}
             key={index}
             convoId={Conversations[index]._id}
-            setChat={setChat}
-            setUserid={setUserid}
           />
         );
       }
@@ -79,7 +71,7 @@ export default function Inbox() {
       >
         <CardContent sx={{ display: "flex" }}>
           <Typography component="div" variant="h5">
-            Live From Space
+            Inbox
           </Typography>
         </CardContent>
         <Divider />
@@ -105,7 +97,7 @@ export default function Inbox() {
         </Box>
       </Box>
       {Chat ? (
-        <Messenger Chat={Chat} Userid={Userid} />
+        <Messenger Chat={Chat}  />
       ) : (
         <Box sx={{ display: "flex", flexDirection: "column", margin: "auto" }}>
           <Typography

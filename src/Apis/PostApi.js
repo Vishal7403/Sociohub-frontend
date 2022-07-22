@@ -1,27 +1,30 @@
 import { Buffer } from "buffer";
-const host = "https://deploy-sociohub.herokuapp.com";
+import axios from "axios";
 var base64Flag = "data:image/jpeg;base64,";
 const findCount = async () => {
-  const response = await fetch(`${host}/api/post/getCount`, {
+  const response = await axios({
     method: "GET",
+    url: `${process.env.REACT_APP_HOST}/api/post/getCount`,
     headers: {
       "content-type": "application/json",
       "auth-token": localStorage.getItem("token"),
     },
   });
-  const ParsedResponse = await response.json();
-  return parseInt(ParsedResponse);
+  return parseInt(response.data);
 };
 
 //Get posts
 const getImages = async (id) => {
-  const res = await fetch(`${host}/api/post/getImages/${id}`, {
-    method: "GET",
-    headers: {
-      "auth-token": localStorage.getItem("token"),
-    },
-  });
-  const stream = res.body.getReader();
+  const response = await fetch(
+    `${process.env.REACT_APP_HOST}/api/post/getImages/${id}`,
+    {
+      method: "GET",
+      headers: {
+        "auth-token": localStorage.getItem("token"),
+      },
+    }
+  );
+  const stream = response.body.getReader();
   let ans = [];
   while (true) {
     const { done, value } = await stream.read();
@@ -35,16 +38,16 @@ const getImages = async (id) => {
   return base64Flag + Buffer.from(ans).toString("base64");
 };
 const getPosts = async (Page, setPage) => {
-  const response = await fetch(`${host}/api/post/getAllPost?page=${Page}`, {
+  const response = await axios({
     method: "GET",
+    url: `${process.env.REACT_APP_HOST}/api/post/getAllPost?page=${Page}`,
     headers: {
       "content-type": "application/json",
       "auth-token": localStorage.getItem("token"),
     },
   });
-  const ParsedResponse = await response.json();
   const ParsedPosts = await Promise.all(
-    ParsedResponse.map(async (p) => {
+    response.data.map(async (p) => {
       if (p.user.ProfilePic) {
         const stream = await getImages(p.user.ProfilePic);
         p.user.pic = stream;
@@ -62,20 +65,22 @@ const getPosts = async (Page, setPage) => {
 //create posts
 const createPosts = async (data) => {
   //eslint-disable-next-line
-  const response = await fetch(`${host}/api/post/createPost`, {
+  const response = await axios({
     method: "POST",
+    url: `${process.env.REACT_APP_HOST}/api/post/createPost`,
     headers: {
       "auth-token": localStorage.getItem("token"),
     },
-    body: data,
+    data: data,
   });
   return true;
 };
 //delete posts
 const deletePost = async (id) => {
   //eslint-disable-next-line
-  const response = await fetch(`${host}/api/post/deletePost/${id}`, {
+  const response = await axios({
     method: "PUT",
+    url: `${process.env.REACT_APP_HOST}/api/post/deletePost/${id}`,
     headers: {
       "auth-token": localStorage.getItem("token"),
     },
@@ -85,19 +90,23 @@ const deletePost = async (id) => {
 //edit posts
 const editPost = async (id, caption) => {
   //eslint-disable-next-line
-  const response = await fetch(`${host}/api/post/updatePost/${id}`, {
-    method: "PUT",
-    headers: {
-      "content-type": "application/json",
-      "auth-token": localStorage.getItem("token"),
-    },
-    body: JSON.stringify({ caption }),
-  });
+  const response = await fetch(
+    `${process.env.REACT_APP_HOST}/api/post/updatePost/${id}`,
+    {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        "auth-token": localStorage.getItem("token"),
+      },
+      body: JSON.stringify({ caption }),
+    }
+  );
 };
 const handleLike = async (id) => {
   //eslint-disable-next-line
-  const response = await fetch(`${host}/api/post/updateLike/${id}`, {
+  const response = await axios({
     method: "PUT",
+    url: `${process.env.REACT_APP_HOST}/api/post/updateLike/${id}`,
     headers: {
       "content-type": "application/json",
       "auth-token": localStorage.getItem("token"),
@@ -105,33 +114,33 @@ const handleLike = async (id) => {
   });
 };
 const PostById = async (id) => {
-  const response = await fetch(`${host}/api/post/PostById/${id}`, {
+  const response = await axios({
     method: "GET",
+    url: `${process.env.REACT_APP_HOST}/api/post/PostById/${id}`,
     headers: {
       "content-type": "application/json",
       "auth-token": localStorage.getItem("token"),
     },
   });
-  const ParsedResponse = await response.json();
-  const stream = await getImages(ParsedResponse.File.Id);
-  ParsedResponse.img = stream;
-  if (ParsedResponse.user.ProfilePic) {
-    const stream = await getImages(ParsedResponse.user.ProfilePic);
-    ParsedResponse.user.pic = stream;
+  const stream = await getImages(response.data.File.Id);
+  response.data.img = stream;
+  if (response.data.user.ProfilePic) {
+    const stream = await getImages(response.data.user.ProfilePic);
+    response.data.user.pic = stream;
   }
-  return ParsedResponse;
+  return response.data;
 };
 const getUserPosts = async (id) => {
-  const response = await fetch(`${host}/api/post/getUserPost/${id}`, {
+  const response = await axios({
     method: "GET",
+    url: `${process.env.REACT_APP_HOST}/api/post/getUserPost/${id}`,
     headers: {
       "content-type": "application/json",
       "auth-token": localStorage.getItem("token"),
     },
   });
-  const ParsedResponse = await response.json();
   const ParsedPosts = await Promise.all(
-    ParsedResponse.map(async (p) => {
+    response.data.map(async (p) => {
       const stream = await getImages(p.File.Id);
       p.img = stream;
       return p;

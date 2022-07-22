@@ -24,12 +24,12 @@ export default function EmojiBar(props) {
           anchorEl={anchorEl}
           placement={placement}
           transition
-          style={{zIndex:'1400'}}
+          style={{ zIndex: "1400" }}
         >
           {({ TransitionProps }) => (
             <Fade {...TransitionProps} timeout={350}>
               <Paper>
-                <Typography sx={{ p: 2 }} component={'span'} variant={'body2'}>
+                <Typography sx={{ p: 2 }} component={"span"} variant={"body2"}>
                   {
                     <Picker
                       onEmojiClick={onEmojiClick}

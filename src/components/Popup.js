@@ -13,28 +13,18 @@ import {
 import { FixedSizeList } from "react-window";
 import CloseIcon from "@mui/icons-material/Close";
 import UserImg from "./user_img.png";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { getUserInfo } from "../Apis/UserApi";
 function Popup(props) {
   const { onClose, open, Data, title } = props;
   function RenderRow(props) {
-    let history = useHistory();
+    let navigate = useNavigate();
     const { index, style } = props;
     const [User, setUser] = useState(null);
     useEffect(() => {
       const handleUser = async () => {
-        const host = "http://localhost:7878";
-        const response = await fetch(
-          `${host}/api/auth/getUser/${Data[index]}`,
-          {
-            method: "GET",
-            headers: {
-              "content-type": "application/json",
-              "auth-token": localStorage.getItem("token"),
-            },
-          }
-        );
-        const ParsedResponse = await response.json();
-        setUser(ParsedResponse);
+        let user = await getUserInfo(Data[index]);
+        setUser(user);
       };
       handleUser();
       //eslint-disable-next-line
@@ -51,12 +41,10 @@ function Popup(props) {
             <ListItemAvatar
               sx={{ cursor: "pointer" }}
               onClick={() => {
-                history.push(`/profile/${User._id}`);
+                navigate(`/profile/${User._id}`);
               }}
             >
-              <Avatar
-                src={!User.ProfilePic ? UserImg : User.pic}
-              />
+              <Avatar src={!User.ProfilePic ? UserImg : User.pic} />
             </ListItemAvatar>
             <ListItemText primary={User.name} sx={{ paddingLeft: "10px" }} />
             <Button

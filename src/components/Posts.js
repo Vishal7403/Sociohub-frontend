@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getPosts, findCount } from "../Apis/PostApi";
 import PostCard from "./PostCard";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import CircularProgress from "@mui/material/CircularProgress";
 import { getUserInfo } from "../Apis/UserApi";
@@ -11,23 +11,21 @@ function Posts() {
   const [Count, setCount] = useState(0);
   const [Posts, setPosts] = useState([]);
   const [SavedPosts, setSavedPosts] = useState([]);
-  const history=useHistory()
+  const navigate = useNavigate();
   useEffect(() => {
-    if(!localStorage.getItem("token"))
-    {
-      history.push("/login")
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
       return;
     }
     const getData = async () => {
-      
-        let res = await getUserInfo(localStorage.getItem("UserId"));
-        if (res.SavedPosts) {
-          setSavedPosts(res.SavedPosts);
-        }
-        let response = await getPosts(Page, setPage);
-        setPosts(response);
-        let resp = await findCount();
-        setCount(resp);
+      let res = await getUserInfo(localStorage.getItem("UserId"));
+      if (res.SavedPosts) {
+        setSavedPosts(res.SavedPosts);
+      }
+      let response = await getPosts(Page, setPage);
+      setPosts(response);
+      let resp = await findCount();
+      setCount(resp);
     };
     if (Posts.length === 0) {
       getData();

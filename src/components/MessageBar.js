@@ -13,6 +13,7 @@ function MessageBar(props) {
   };
   const handleSubmit = async () => {
     setLoading(true);
+    //eslint-disable-next-line
     let res = await handleClick(Message);
     if (props.HandleCount) {
       props.HandleCount();

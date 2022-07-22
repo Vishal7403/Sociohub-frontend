@@ -10,7 +10,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import UserImg from "./user_img.png";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getUserInfo, handleFollow } from "../Apis/UserApi";
 import { getUserPosts } from "../Apis/PostApi";
 import InfoContext from "../Contexts/InfoContext";
@@ -18,6 +18,7 @@ import Popup from "./Popup";
 import GridOnIcon from "@mui/icons-material/GridOn";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import GroupIcon from "@mui/icons-material/Group";
+import { getConvoId } from "../Apis/ChatApi";
 //disableGutters to remove default padding
 function FollowBar(props) {
   const { id, handleFollow, Followers, handleFollowerCount } = props;
@@ -41,9 +42,6 @@ function FollowBar(props) {
     </Button>
   ) : IsFollowing ? (
     <>
-      <Button variant="contained" size="small" sx={{ marginRight: "20px" }}>
-        Message
-      </Button>
       <Button variant="contained" size="small" onClick={handleClick}>
         Unfollow
       </Button>
@@ -56,9 +54,14 @@ function FollowBar(props) {
 }
 function InfoBar(props) {
   const { id, UserData, len, handleFollow } = props;
+  const navigate = useNavigate();
   const [Followers, SetFollowers] = useState(0);
   const [Open, setOpen] = useState(false);
   const [Data, setData] = useState({ data: null, title: "" });
+  const handleClick = async () => {
+    const data = await getConvoId(id);
+    navigate(`/inbox/${data._id}`);
+  };
   const handleClickOpen = (d, t) => {
     setData({ data: d, title: t });
     setOpen(true);
@@ -100,12 +103,22 @@ function InfoBar(props) {
           {UserData.name}
         </strong>
         {id !== localStorage.getItem("UserId") ? (
-          <FollowBar
-            id={id}
-            handleFollow={handleFollow}
-            Followers={UserData.Followers}
-            handleFollowerCount={handleFollowerCount}
-          />
+          <>
+            <FollowBar
+              id={id}
+              handleFollow={handleFollow}
+              Followers={UserData.Followers}
+              handleFollowerCount={handleFollowerCount}
+            />
+            <Button
+              variant="contained"
+              size="small"
+              sx={{ marginLeft: "20px" }}
+              onClick={handleClick}
+            >
+              Message
+            </Button>
+          </>
         ) : (
           <Button variant="contained" size="small">
             Edit Profile
@@ -147,7 +160,7 @@ function InfoBar(props) {
 }
 const Posts = (props) => {
   const { UserPosts } = props;
-  const history = useHistory();
+  const navigate = useNavigate();
   return (
     <ImageList cols={3}>
       {UserPosts.map((post) => (
@@ -155,7 +168,7 @@ const Posts = (props) => {
           key={post._id}
           sx={{ marginBottom: "20px", cursor: "pointer" }}
           onClick={() => {
-            history.push(`/comment/${post._id}`);
+            navigate(`/comment/${post._id}`);
           }}
         >
           <img
@@ -179,11 +192,11 @@ export default function Profile() {
   const [UserData, setUserData] = useState(null);
   const [UserPosts, setUserPosts] = useState(null);
   const [Bar, setBar] = useState(0);
-  const history=useHistory()
+  const navigate = useNavigate();
   useEffect(() => {
-    if(!localStorage.getItem("token"))
-    {
-      history.push("/login")
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+      return;
     }
     const getData = async () => {
       Loading(10);

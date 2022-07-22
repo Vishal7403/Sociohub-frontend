@@ -11,14 +11,14 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useState} from "react";
+import { useState } from "react";
 import { SignUpUser } from "../Apis/UserApi";
 import { toast } from "react-toastify";
-import {useHistory} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 const theme = createTheme();
 
 export default function SignUp() {
-  const history=useHistory()
+  const navigate = useNavigate();
   const Toast = (msg, type) =>
     toast(msg, { type: type, pauseOnFocusLoss: false, pauseOnHover: false });
   const [Data, setData] = useState({
@@ -33,7 +33,6 @@ export default function SignUp() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (Data.Confirmpassword === Data.password) {
-      console.log("inside");
       const response = await SignUpUser(
         Data.Username,
         Data.email,
@@ -41,7 +40,7 @@ export default function SignUp() {
       );
       if (response.success) {
         Toast(response.msg, "success");
-        history.push("/login")
+        navigate("/login");
       } else {
         Toast("email already exists", "error");
       }
